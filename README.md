@@ -39,22 +39,22 @@ Stability analysis reruns the stochastic algorithms across dozens of seeds and s
 
 ## Get it
 
-Pick whichever fits how you work — all three run the identical app, fully offline.
+Pick whichever fits how you work - all three run the identical app, fully offline.
 
-**Desktop app** — the fastest way to start. From [Releases](../../releases):
-- **Windows:** `DSM_Optimizer_Setup.exe` (recommended — adds Start-menu shortcuts and gives `.dsmproj` project files their own icon), or the portable `DSM_Optimizer_Windows.zip` if you prefer nothing installed.
-- **macOS:** `DSM_Optimizer_macOS.zip` — unzip and run. First launch: right-click → Open (the app is unsigned, so macOS asks once).
-- **Linux:** use the Python package below — same app, opens in your browser.
+**Desktop app** - the fastest way to start. From [Releases](../../releases):
+- **Windows:** `DSM_Optimizer_Setup.exe` (recommended - adds Start-menu shortcuts and gives `.dsmproj` project files their own icon), or the portable `DSM_Optimizer_Windows.zip` if you prefer nothing installed.
+- **macOS:** `DSM_Optimizer_macOS.zip` - unzip and run. First launch: right-click → Open (the app is unsigned, so macOS asks once).
+- **Linux:** use the Python package below - same app, opens in your browser.
 
-*First-launch note:* the binaries are unsigned open-source builds, so Windows SmartScreen may show "Windows protected your PC" — click **More info → Run anyway**. This is about the missing paid signing certificate, not the software.
+*First-launch note:* the binaries are unsigned open-source builds, so Windows SmartScreen may show "Windows protected your PC" - click **More info → Run anyway**. This is about the missing paid signing certificate, not the software.
 
-**Python package** — one command, opens in your browser:
+**Python package** - one command, opens in your browser:
 ```bash
 pip install dsm-optimizer
 dsm-optimizer
 ```
 
-**From source** — for hacking on it:
+**From source** - for hacking on it:
 ```bash
 pip install flask numpy scikit-learn openpyxl flask matplotlib waitress
 python server/app_server.py        # then open http://127.0.0.1:8765
