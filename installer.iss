@@ -10,7 +10,7 @@
 ; Compile: iscc installer.iss   (or open in the Inno Setup GUI)
 
 #define AppName "DSM Optimizer"
-#define AppVersion "3.4.3"
+#define AppVersion "3.4.4"
 #define AppExe "DSM_Optimizer.exe"
 
 [Setup]

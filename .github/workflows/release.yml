@@ -14,7 +14,7 @@ on:
     tags: ["v*"]
 
 permissions:
-  contents: write          
+  contents: write          # needed to create the Release and upload assets
 
 jobs:
   build:
@@ -46,6 +46,15 @@ jobs:
       - name: Build with PyInstaller
         run: pyinstaller DSM_Optimizer.spec --noconfirm
 
+      # Must happen BEFORE zipping so the config ships inside the zip.
+      # It defeats Mark-of-the-Web for the portable zip: .NET reads
+      # <exe name>.exe.config from beside the host exe and
+      # loadFromRemoteSources lets it load the download-tagged DLLs.
+      - name: Add .NET config beside the exe (Windows)
+        if: runner.os == 'Windows'
+        run: Copy-Item "assets\DSM_Optimizer.exe.config" "dist\DSM_Optimizer\"
+        shell: pwsh
+
       - name: Zip the build
         shell: python
         run: |
@@ -58,6 +67,9 @@ jobs:
       - name: Build Windows installer
         if: runner.os == 'Windows'
         run: |
+          # Env vars with parentheses need brace syntax in PowerShell:
+          # "$env:ProgramFiles(x86)" expands ProgramFiles then appends a
+          # literal "(x86)" - ${env:ProgramFiles(x86)} is the real variable.
           $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
           if (-not (Test-Path $iscc)) {
             choco install innosetup -y --no-progress
