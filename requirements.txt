@@ -1,0 +1,15 @@
+# Core algorithm stack
+numpy>=1.21
+scipy>=1.7
+scikit-learn>=0.24
+openpyxl>=3.0
+
+# CLI plotting (main.py --pareto / *_original.png etc.)
+matplotlib>=3.4
+
+# Web UI backend
+flask>=3.0
+
+# Desktop packaging - native window wrapping the local Flask server
+# (not required if you only use the CLI or self-host the web UI in a browser)
+pywebview>=5.0

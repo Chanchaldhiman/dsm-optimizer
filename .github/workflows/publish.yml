@@ -1,0 +1,37 @@
+# Publish dsm-optimizer to PyPI on tagged releases (v3.2.0, v3.3.0, ...).
+#
+# One-time setup (no API tokens needed — uses PyPI Trusted Publishing):
+#   1. Create the project once on pypi.org (or reserve the name).
+#   2. In the PyPI project settings -> Publishing, add a "trusted publisher":
+#      owner = your GitHub user/org, repo = this repo,
+#      workflow = publish.yml, environment = pypi.
+#   3. git tag v3.2.0 && git push --tags  -> tests run, package builds, publishes.
+name: Publish to PyPI
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install numpy scikit-learn openpyxl flask matplotlib pytest
+      - run: pytest tests/ -v
+
+  build-and-publish:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: pypi              # must match the trusted-publisher config
+    permissions:
+      id-token: write              # OIDC token for trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install build
+      - run: python -m build       # sdist + wheel from pyproject.toml
+      - uses: pypa/gh-action-pypi-publish@release/v1

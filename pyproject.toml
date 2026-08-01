@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dsm-optimizer"
+version = "3.4.0"
+description = "Design Structure Matrix optimization: clustering (Spectral, MCL, Thebeau, Louvain), process partitioning with Tarjan SCCs and tearing analysis, simulated-annealing sequencing, and stability analysis - with a local web UI and CLI."
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Chanchal Dhiman" }]
+requires-python = ">=3.9"
+keywords = ["DSM", "design structure matrix", "systems engineering", "clustering", "partitioning", "tearing", "MBSE"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering",
+]
+dependencies = [
+  "numpy",
+  "scikit-learn",
+  "openpyxl",
+  "flask",
+  "matplotlib",
+]
+
+[project.optional-dependencies]
+desktop = ["pywebview"]
+dev = ["pytest"]
+
+[project.scripts]
+dsm-optimizer = "server.app_server:main"   # opens the web app in your browser
+dsm-optimize = "main:main"                 # batch CLI
+
+[tool.setuptools]
+packages = ["dsm_optimizer", "dsm_optimizer.algorithms", "dsm_optimizer.scoring",
+            "dsm_optimizer.io", "dsm_optimizer.analysis", "server"]
+py-modules = ["main", "desktop_launcher"]
+
+[tool.setuptools.package-data]
+server = ["static/*", "static/css/*", "static/js/*", "sample_dsm.xlsx"]
