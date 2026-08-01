@@ -314,3 +314,54 @@ def test_sa_minimizes_weighted_feedback_not_mark_count():
     # any order leaves exactly one of the pair-marks above the diagonal;
     # only weighted feedback distinguishes them - the w=9 must point backward
     assert order.index(1) < order.index(0)
+
+
+# ── k-range enforcement at sequencing (all algorithms, choice preserved) ─────
+
+def test_sequencing_enforces_max_k_for_every_algorithm():
+    m = _block_dsm()                      # 4 planted blocks of 5
+    labels = [f"E{i}" for i in range(len(m))]
+    opt = DSMOptimizer(DSMConstraints(seed=42, min_clusters=2, max_clusters=2))
+    s1 = opt.cluster_stage(m, labels, verbose=False)
+    for algo in ("spectral", "mcl", "thebeau", "louvain"):
+        if s1[algo] is None:
+            continue
+        r = opt.sequence_stage(m, labels, s1, algo, verbose=False)
+        assert r["metrics"]["n_clusters"] <= 2, algo
+        assert r["winner"]["algorithm"] == algo
+        assert "k_enforcement" in r["winner"]
+
+
+def test_sequencing_enforces_min_k_by_splitting():
+    m = _block_dsm()
+    labels = [f"E{i}" for i in range(len(m))]
+    opt = DSMOptimizer(DSMConstraints(seed=42, min_clusters=6, max_clusters=12,
+                                      min_cluster_size=1))
+    s1 = opt.cluster_stage(m, labels, verbose=False)
+    for algo in ("spectral", "thebeau", "louvain"):
+        if s1[algo] is None:
+            continue
+        r = opt.sequence_stage(m, labels, s1, algo, verbose=False)
+        assert r["metrics"]["n_clusters"] >= 6, algo
+        assert r["winner"]["algorithm"] == algo
+
+
+def test_chosen_algorithm_is_never_silently_replaced():
+    """Star topology: size merging collapses everything into one cluster -
+    the old safety net would swap in spectral; now the requested algorithm
+    must be kept and min_k reached by splitting instead."""
+    n = 12
+    star = np.zeros((n, n))
+    for i in range(1, n):
+        star[0, i] = star[i, 0] = 3
+    labels = [f"E{i}" for i in range(n)]
+    opt = DSMOptimizer(DSMConstraints(seed=1, min_clusters=3, max_clusters=6,
+                                      bus_threshold=0.99))
+    s1 = opt.cluster_stage(star, labels, verbose=False)
+    for algo in ("spectral", "mcl", "thebeau", "louvain"):
+        if s1[algo] is None:
+            continue
+        r = opt.sequence_stage(star, labels, s1, algo, verbose=False)
+        assert r["winner"]["algorithm"] == algo
+        assert r["winner"].get("forced_safety_net") is None
+        assert r["metrics"]["n_clusters"] >= 3

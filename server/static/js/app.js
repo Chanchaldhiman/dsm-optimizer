@@ -419,8 +419,26 @@
     if (!analysis || analysisType !== "component") return;
     compareGrid.innerHTML = "";
     ALGOS.forEach((key) => compareGrid.appendChild(candidateCard(key)));
+    const seqDetail = () => {
+      if (!stage2) return "";
+      const bits = [];
+      const ke = stage2.winner && stage2.winner.k_enforcement;
+      if (ke && (ke.merges || ke.splits)) {
+        const parts = [];
+        if (ke.merges) parts.push(`merged ${ke.merges} cluster pair${ke.merges === 1 ? "" : "s"}`);
+        if (ke.splits) parts.push(`split ${ke.splits} cluster${ke.splits === 1 ? "" : "s"}`);
+        bits.push(`<b>k range enforced:</b> ${parts.join(" and ")} to fit your min/max cluster settings (${stage2.metrics.n_clusters} final).`);
+      }
+      const s = stage2.sequencing;
+      if (s) {
+        bits.push(s.feedback_before === s.feedback_after
+          ? `Feedback unchanged at ${s.feedback_after} - this partition's element order was already optimal (on symmetric matrices that is guaranteed, not a failed run).`
+          : `Feedback reduced ${s.feedback_before} → ${s.feedback_after} by reordering within clusters.`);
+      }
+      return bits.length ? " " + bits.join(" ") : "";
+    };
     compareNote.innerHTML = stage2
-      ? `Sequenced with <b>${ALGO_NAMES[chosenAlgo]}</b>. Pick another candidate to re-sequence, or refine cluster membership by hand in the <b>What-if</b> tab. Check <b>Stability</b> to see how robust these assignments are across random seeds.`
+      ? `Sequenced with <b>${ALGO_NAMES[chosenAlgo]}</b>.${seqDetail()} Pick another candidate to re-sequence, or refine cluster membership by hand in the <b>What-if</b> tab. Check <b>Stability</b> to see how robust these assignments are across random seeds.`
       : `Candidates are <b>raw algorithm output</b> - your k range and cluster-size limits are applied in the sequencing step (small clusters merged, oversized ones split). Inspect each candidate in its tab, then pick one to sequence. Sequencing reorders elements <i>within</i> clusters (simulated annealing) to minimize feedback marks. <b>Recommended</b> = lowest Thebeau cost, but cost doesn't capture everything - check <b>Stability</b> before trusting a close call.`;
   }
 
