@@ -8,9 +8,30 @@ datas = [
     ("dsm_optimizer", "dsm_optimizer"),
 ]
 
+binaries = []
+
+# Windows: pywebview's winforms backend needs the full pythonnet/.NET bridge
+# (Python.Runtime.dll, ClrLoader native libs, their .deps/.config sidecars).
+# Partial collection is a classic cause of
+# "Failed to resolve Python.Runtime.Loader.Initialize" in frozen builds -
+# collect everything those packages ship instead of relying on scanning.
+if sys.platform == "win32":
+    from PyInstaller.utils.hooks import collect_all
+    for _pkg in ("pythonnet", "clr_loader", "webview"):
+        try:
+            _d, _b, _h = collect_all(_pkg)
+            datas += _d
+            binaries += _b
+        except Exception:
+            pass
+
 hidden = [
     "webview",
     "webview.platforms.winforms",   # Windows
+    "webview.platforms.edgechromium",
+    "clr_loader",
+    "clr_loader.netfx",
+    "pythonnet",
     "webview.platforms.cocoa",      # macOS
     "webview.platforms.gtk",        # Linux
     "flask",
@@ -48,7 +69,7 @@ excludes = [
 a = Analysis(
     ["desktop_launcher.py"],
     pathex=[os.getcwd()],
-    binaries=[],
+    binaries=binaries,
     datas=datas,
     hiddenimports=hidden,
     hookspath=[],

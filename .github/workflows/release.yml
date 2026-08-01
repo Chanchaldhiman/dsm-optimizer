@@ -1,6 +1,3 @@
-# PyInstaller cannot cross-compile: a Windows .exe must be built ON Windows,
-# a macOS .app ON macOS. You only need to push a tag; GitHub does the rest.
-#
 # Release ritual (same tag also triggers publish.yml -> PyPI):
 #   1. bump version in pyproject.toml + installer.iss, commit
 #   2. git tag v3.4.1
@@ -10,7 +7,7 @@
 # Linux desktop builds are intentionally omitted: pywebview needs GTK/WebKit
 # system packages that make CI bundles fragile. Linux users get the identical
 # app via `pip install dsm-optimizer`.
-name: Build desktop -
+name: Build desktop apps
 
 on:
   push:
@@ -37,6 +34,10 @@ jobs:
       - name: Install dependencies
         run: pip install numpy scikit-learn openpyxl flask matplotlib waitress pywebview pyinstaller
 
+      - name: Pin the .NET bridge (Windows)
+        if: runner.os == 'Windows'
+        run: pip install "pythonnet==3.0.5" "clr-loader==0.2.7.post0"
+
       - name: Run tests first
         run: |
           pip install pytest
@@ -51,10 +52,24 @@ jobs:
           import shutil
           shutil.make_archive("${{ matrix.artifact }}", "zip", "dist", "DSM_Optimizer")
 
+      # The installer is the durable fix for Windows' Mark-of-the-Web:
+      # files extracted from a downloaded zip are tagged, and .NET refuses
+      # tagged assemblies - but files written by an installer are not tagged.
+      - name: Build Windows installer
+        if: runner.os == 'Windows'
+        run: |
+          choco install innosetup -y --no-progress
+          & "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe" installer.iss
+          Copy-Item "Output\DSM_Optimizer_Setup.exe" .
+        shell: pwsh
+
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
-          path: ${{ matrix.artifact }}.zip
+          path: |
+            ${{ matrix.artifact }}.zip
+            DSM_Optimizer_Setup.exe
+          if-no-files-found: warn
 
   release:
     needs: build
@@ -64,5 +79,7 @@ jobs:
         with: { merge-multiple: true }
       - uses: softprops/action-gh-release@v2
         with:
-          files: "*.zip"
+          files: |
+            *.zip
+            *.exe
           generate_release_notes: true
