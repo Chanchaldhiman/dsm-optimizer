@@ -80,7 +80,7 @@ dsm-optimizer          # opens the app in your browser
 
 **MCL gave me more clusters than my max.** Candidates are raw algorithm output - an algorithm's natural granularity can't always be dialed. Your k range and size limits are enforced when you *sequence* the chosen candidate (small clusters merged, oversized split); out-of-range candidates are badged.
 
-**Is my data uploaded anywhere?** No. The app is a local server talking to a local window. Airgapped machines work fine.
+**Is my data uploaded anywhere?** No. The app is a local server talking to a local window. 
 
 **Weighted dependencies?** Yes - any positive number. Weights feed the cost function, MCL flow, tearing preferences, and propagation strengths.
 
@@ -113,4 +113,4 @@ MIT. If this tool contributes to published work, cite the underlying methods (St
 
 ---
 
-*Built by Chanchal Dhiman. Issues and PRs welcome - especially real-world matrices that break things.*
+*Issues and PRs welcome - especially real-world matrices that break things.*
