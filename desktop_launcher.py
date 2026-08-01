@@ -57,7 +57,7 @@ def main():
     if splash:
         splash.update_text("Loading analysis engine (sklearn/scipy)\u2026")
     import webview
-    from server.app_server import create_app
+    from server.app_server import create_app, serve
 
     port = _free_port()
     app = create_app()
@@ -65,7 +65,7 @@ def main():
     def run_server():
         # use_reloader=False is required - the reloader spawns a second
         # process, which breaks the "one app, one window" packaging model.
-        app.run(host="127.0.0.1", port=port, debug=False, use_reloader=False, threaded=True)
+        serve(app, host="127.0.0.1", port=port)
 
     server_thread = threading.Thread(target=run_server, daemon=True)
     server_thread.start()

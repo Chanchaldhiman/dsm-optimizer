@@ -537,6 +537,32 @@ def create_app():
     return app
 
 
+def serve(flask_app, host="127.0.0.1", port=8765):
+    """
+    Serve the app without the Flask development-server warning.
+
+    Preferred: waitress - a small, pure-Python, threaded production WSGI
+    server, so the warning disappears because it no longer applies (rather
+    than being hidden). Fallback (waitress not installed, e.g. running from
+    a source checkout): the dev server with its banner and per-request log
+    lines silenced - for a localhost-only, single-user tool the dev server
+    is functionally fine; the noise was the problem, not the safety.
+    """
+    try:
+        from waitress import serve as _waitress_serve
+        _waitress_serve(flask_app, host=host, port=port, threads=6)
+    except ImportError:
+        import logging
+        logging.getLogger("werkzeug").setLevel(logging.ERROR)
+        try:
+            import flask.cli
+            flask.cli.show_server_banner = lambda *a, **k: None
+        except Exception:
+            pass
+        flask_app.run(host=host, port=port, debug=False,
+                      use_reloader=False, threaded=True)
+
+
 def main():
     """
     Console entry point (`dsm-optimizer` after pip install): starts the local
@@ -557,7 +583,7 @@ def main():
     url = f"http://127.0.0.1:{port}"
     print(f"DSM Optimizer running at {url}  (Ctrl+C to stop)")
     threading.Timer(1.0, lambda: webbrowser.open(url)).start()
-    app.run(host="127.0.0.1", port=port, debug=False)
+    serve(app, host="127.0.0.1", port=port)
 
 
 if __name__ == "__main__":
