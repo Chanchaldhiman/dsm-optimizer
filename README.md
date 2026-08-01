@@ -1,5 +1,7 @@
 # DSM Optimizer
 
+![DSM Optimizer: load a matrix, compare four algorithms, sequence, explore change propagation](docs/demo.gif)
+
 **See the hidden structure of your system - then fix it.**
 
 A free, local-first Design Structure Matrix workbench for systems engineers. Feed it your system's dependencies; it shows you which parts belong together, what order the work should happen in, which single dependencies cause your iteration loops, and which components will hurt most when requirements change.
