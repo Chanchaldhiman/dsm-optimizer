@@ -14,7 +14,7 @@ on:
     tags: ["v*"]
 
 permissions:
-  contents: write          # needed to create the Release and upload assets
+  contents: write          
 
 jobs:
   build:
@@ -58,8 +58,12 @@ jobs:
       - name: Build Windows installer
         if: runner.os == 'Windows'
         run: |
-          choco install innosetup -y --no-progress
-          & "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe" installer.iss
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            choco install innosetup -y --no-progress
+          }
+          if (-not (Test-Path $iscc)) { $iscc = "iscc" }   # choco shim fallback
+          & $iscc installer.iss
           Copy-Item "Output\DSM_Optimizer_Setup.exe" .
         shell: pwsh
 
