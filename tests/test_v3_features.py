@@ -261,3 +261,56 @@ def test_disconnected_core_reports_components_and_valid_fiedler():
     s2 = opt.cluster_stage(m2, [f"E{i}" for i in range(len(m2))], verbose=False)
     assert len(s2["core_components"]) == 1
     assert len(s2["fiedler"]) == len(s2["fiedler_idx"])
+
+
+# ── Weight sensitivity: binary vs weighted treatment MUST differ ─────────────
+
+def _weight_pull_case():
+    """X has TWO w=9 links into triangle P and THREE w=1 links into triangle Q.
+    Link count says Q (3 > 2); weight says P. Costs are strictly ordered
+    (P 564 < singleton 618 < Q 654) - the earlier one-link version had X-in-P
+    tied with X-as-singleton at equal cost, so Thebeau's indifference between
+    optima looked like weight-blindness. Every algorithm must land X in P."""
+    n = 7
+    m = np.zeros((n, n))
+    for tri in [(0, 1, 2), (3, 4, 5)]:
+        for a in tri:
+            for b in tri:
+                if a != b:
+                    m[a, b] = 9
+    m[6, 0] = m[0, 6] = 9
+    m[6, 1] = m[1, 6] = 9
+    m[6, 3] = m[3, 6] = 1
+    m[6, 4] = m[4, 6] = 1
+    m[6, 5] = m[5, 6] = 1
+    return m
+
+
+def test_all_algorithms_follow_weights_not_link_counts():
+    from dsm_optimizer.algorithms.spectral import spectral_cluster as sc
+    from dsm_optimizer.algorithms.mcl import run_mcl
+    m = _weight_pull_case()
+    assert sc(m, k=2, min_k=2, max_k=2)[0][6] == sc(m, k=2, min_k=2, max_k=2)[0][0]
+    assert thebeau_cluster(m, seed=0)[6] == thebeau_cluster(m, seed=0)[0]
+    assert louvain_cluster(m, seed=0)[6] == louvain_cluster(m, seed=0)[0]
+    mc = run_mcl(m, inflation=2.0)
+    assert mc[6] == mc[0]
+
+
+def test_cost_is_linear_in_weights_and_prefers_strong_pairs_inside():
+    m = _weight_pull_case()
+    inside = thebeau_cost(m, [0, 0, 0, 1, 1, 1, 0])     # X with its w=9 partners
+    single = thebeau_cost(m, [0, 0, 0, 1, 1, 1, 2])     # X alone
+    outside = thebeau_cost(m, [0, 0, 0, 1, 1, 1, 1])    # X with the weak side
+    assert inside < single < outside, "strict cost ordering required (no ties)"
+    m2 = m.copy(); m2[6, 3] = m2[3, 6] = 9
+    assert thebeau_cost(m2, [0, 0, 0, 1, 1, 1, 0]) > inside
+
+
+def test_sa_minimizes_weighted_feedback_not_mark_count():
+    from dsm_optimizer.algorithms.sequencing import sa_sequence
+    m = np.zeros((3, 3)); m[0, 1] = 9; m[1, 0] = 1; m[2, 0] = 1
+    order = sa_sequence(m, [0, 1, 2], seed=7)
+    # any order leaves exactly one of the pair-marks above the diagonal;
+    # only weighted feedback distinguishes them - the w=9 must point backward
+    assert order.index(1) < order.index(0)

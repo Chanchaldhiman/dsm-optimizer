@@ -2,12 +2,12 @@
 Process-DSM partitioning (sequencing) and tearing analysis.
 
 Convention (same as the rest of the codebase): matrix[i][j] > 0 means row i
-DEPENDS ON column j — i needs j's output, so j should come earlier. Under a
+DEPENDS ON column j - i needs j's output, so j should come earlier. Under a
 given ordering, marks ABOVE the diagonal are feedback (a task depending on
 one that hasn't happened yet).
 
 Pipeline for a process/task DSM:
-  1. Tarjan's algorithm finds strongly-connected components (SCCs) — the
+  1. Tarjan's algorithm finds strongly-connected components (SCCs) - the
      iteration loops that no reordering can remove.
   2. The SCC condensation is a DAG; topological ordering (Kahn) gives a
      sequence in which every remaining dependency points backward (feed-
@@ -15,21 +15,21 @@ Pipeline for a process/task DSM:
   3. Within each loop (SCC size > 1), simulated annealing (the existing
      sa_sequence) orders members to minimise residual feedback.
   4. Tearing analysis: for each loop, rank individual dependencies by how
-     much removing ("tearing") them would shrink the loop — these are the
+     much removing ("tearing") them would shrink the loop - these are the
      assumptions/decouplings an engineer should consider making explicit.
 """
 import numpy as np
 from .sequencing import sa_sequence, feedback_marks
 
 
-# ── Strongly-connected components (Tarjan, iterative — no recursion limit) ──
+# ── Strongly-connected components (Tarjan, iterative - no recursion limit) ──
 
 def tarjan_scc(matrix):
     """
     SCCs of the dependency graph. Edge i -> j iff matrix[i][j] > 0
     (i depends on j). Returns list of components (lists of indices);
     order is reverse-topological per Tarjan, but callers should not rely
-    on it — use condensation_order() for sequencing.
+    on it - use condensation_order() for sequencing.
     """
     n = len(matrix)
     adj = [[j for j in range(n) if j != i and matrix[i][j] > 0] for i in range(n)]
@@ -89,7 +89,7 @@ def condensation_order(matrix, sccs):
     Returns (block_order, levels): block_order is a list of SCC indices in
     execution order; levels[b] is the longest-dependency-chain depth of
     block b (blocks sharing a level have no ordering constraint between
-    them — they can proceed in parallel).
+    them - they can proceed in parallel).
     """
     n_blocks = len(sccs)
     of_block = {}
@@ -136,10 +136,10 @@ def tearing_suggestions(matrix, scc, max_suggestions=5):
 
     impact = members freed from the largest remaining sub-loop.
     Ranked by impact desc, then by mark weight asc (prefer tearing weak
-    dependencies — they're the cheapest assumptions to make explicit).
+    dependencies - they're the cheapest assumptions to make explicit).
 
     Returns list of dicts: {from, to, weight, impact, largest_loop_after,
-    fully_resolves} — 'from' depends on 'to' (the mark at [from][to]).
+    fully_resolves} - 'from' depends on 'to' (the mark at [from][to]).
     """
     members = list(scc)
     size = len(members)
@@ -232,7 +232,7 @@ def partition_dsm(matrix, labels, seed=None, tear_suggestions=5):
     n_coupled = sum(lp["size"] for lp in loops)
 
     # Symmetry: fraction of dependencies that are reciprocated. Near 1.0 means
-    # the matrix is undirected — component/architecture data, for which
+    # the matrix is undirected - component/architecture data, for which
     # process partitioning is the wrong analysis (any ordering has identical
     # feedback on a symmetric matrix). Surfaced so the UI can say so.
     nz = (matrix > 0)

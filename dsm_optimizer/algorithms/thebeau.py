@@ -1,6 +1,6 @@
 """
 Thebeau's stochastic clustering algorithm (Thebeau 2001, "Knowledge flow
-through effective use of DSMs" — the algorithm whose coordination-cost
+through effective use of DSMs" - the algorithm whose coordination-cost
 objective this project already uses for scoring).
 
 Faithful to the published pseudocode: elements start in singleton clusters;
@@ -10,7 +10,7 @@ coordination cost are accepted, with occasional random acceptance of
 worse moves (rand_accept) and occasional second-best bids (rand_bid) to
 escape local minima. Empty clusters are deleted at the end.
 
-Seedable via a local RNG — never touches global random state.
+Seedable via a local RNG - never touches global random state.
 """
 import random
 import numpy as np
@@ -36,7 +36,8 @@ def thebeau_cluster(matrix, pow_cc=1.0, pow_bid=1.0, pow_dep=4.0,
     np.fill_diagonal(sym, 0)
 
     clusters = list(range(n))          # start: each element its own cluster
-    best_cost = thebeau_cost(A, clusters)
+    cur_cost = thebeau_cost(A, clusters)
+    best_cost = cur_cost
     best_clusters = clusters[:]
 
     rand_accept = 2 * n
@@ -75,7 +76,13 @@ def thebeau_cluster(matrix, pow_cc=1.0, pow_bid=1.0, pow_dep=4.0,
             old = clusters[e]
             clusters[e] = target
             new_cost = thebeau_cost(A, clusters)
-            if new_cost <= best_cost or rng.randrange(rand_accept) == 0:
+            # Thebeau's published flow: accept against the CURRENT cost.
+            # (An earlier version compared against the global best, which
+            # strands the search: once best is low, every exploratory step
+            # is rejected and legitimate downhill moves from the current
+            # state never happen.)
+            if new_cost <= cur_cost or rng.randrange(rand_accept) == 0:
+                cur_cost = new_cost
                 if new_cost < best_cost:
                     best_cost = new_cost
                     best_clusters = clusters[:]

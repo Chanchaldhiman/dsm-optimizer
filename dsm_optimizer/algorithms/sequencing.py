@@ -60,7 +60,7 @@ def feedback_marks(matrix, member_indices):
     """
     Public convenience wrapper: feedback mark count for a list of *global*
     indices, in the order given. Used for reporting (e.g. "before" using the
-    original member order, "after" using sa_sequence's returned order) —
+    original member order, "after" using sa_sequence's returned order) -
     not performance-critical, so it's fine to re-slice here.
     """
     sub = matrix[np.ix_(member_indices, member_indices)]

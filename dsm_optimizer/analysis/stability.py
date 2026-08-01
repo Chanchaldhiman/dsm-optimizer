@@ -9,7 +9,7 @@ cluster. Entries near 1.0 are robust module assignments; entries near
 0.5 are coin flips the engineer should decide manually.
 
 Per-element consistency = mean co-clustering frequency with the members
-of its own reference cluster (the partition being displayed) — a direct
+of its own reference cluster (the partition being displayed) - a direct
 "how settled is this element" score.
 """
 import numpy as np
@@ -22,7 +22,7 @@ def stability_analysis(matrix, algorithm, reference_clusters,
                        runs=20, min_k=2, max_k=10, base_seed=0):
     """
     matrix: CORE matrix (bus elements already excluded).
-    algorithm: 'spectral' | 'thebeau' | 'louvain' (MCL is deterministic —
+    algorithm: 'spectral' | 'thebeau' | 'louvain' (MCL is deterministic -
                reject it upstream with a clear message).
     reference_clusters: the partition currently on screen, in the SAME
                element order as `matrix` (used for consistency scores).

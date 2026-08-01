@@ -1,4 +1,4 @@
-/* DSM Optimizer — workspace, matrix editor, edge-list import, projects,
+/* DSM Optimizer - workspace, matrix editor, edge-list import, projects,
    diff + change propagation, what-if scoring, and report generation.
    Loaded before app.js; exposes window.DSMTools. No dependencies. */
 (() => {
@@ -12,7 +12,7 @@
     loaded: false,
     _undo: [],
     _redo: [],
-    onChange: null,      // set by app.js — called after every mutation
+    onChange: null,      // set by app.js - called after every mutation
 
     set(matrix, labels, sourceName) {
       this.matrix = matrix.map((r) => r.slice());
@@ -100,7 +100,7 @@
       labels.forEach((lbl, j) => {
         const th = document.createElement("th");
         th.textContent = lbl.length > 10 ? lbl.slice(0, 9) + "\u2026" : lbl;
-        th.title = `${lbl} — click to rename`;
+        th.title = `${lbl} - click to rename`;
         th.onclick = () => {
           const name = prompt("Rename element:", lbl);
           if (name && name.trim()) Workspace.rename(j, name.trim());
@@ -142,7 +142,7 @@
             td.textContent = v > 0 ? (v === 1 ? "\u25cf" : String(v)) : "";
             td.title = `${labels[i]} depends on ${labels[j]}` +
                        (v > 0 ? ` (weight ${v})` : "") +
-                       " — click to toggle, double-click for weight";
+                       " - click to toggle, double-click for weight";
             td.onclick = () => Workspace.toggleCell(i, j);
             td.ondblclick = (e) => {
               e.preventDefault();
@@ -165,7 +165,7 @@
 
   // ── Edge-list CSV import ────────────────────────────────────────────────
   // Accepts lines of: from,to[,weight]  (header row auto-detected).
-  // "from depends on to" — matches the IR convention used internally.
+  // "from depends on to" - matches the IR convention used internally.
   function parseEdgeList(text) {
     const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
     if (!lines.length) throw new Error("Edge list is empty.");
@@ -207,7 +207,7 @@
     return widths.every((w) => w >= 2 && w <= 3) && lines.length >= 2;
   }
 
-  // ── Project files (.dsmproj — plain JSON) ───────────────────────────────
+  // ── Project files (.dsmproj - plain JSON) ───────────────────────────────
   const Project = {
     VERSION: 2,   // v2 adds client_state + server_state (full session); v1 files (matrix+settings) still load
     serialize(extra) {
@@ -240,24 +240,19 @@
 
   // ── Scoring in JS (mirrors scoring/thebeau_cost.py) for live what-if ────
   function thebeauCost(matrix, clusters, powCc = 1.0, powBid = 1.0) {
+    // Published linear Thebeau cost - MUST stay numerically identical to
+    // dsm_optimizer/scoring/thebeau_cost.py (verified by parity test).
     const n = matrix.length;
-    const unique = [...new Set(clusters)];
+    const counts = {};
+    clusters.forEach((c) => { counts[c] = (counts[c] || 0) + 1; });
     let total = 0;
-    for (const c of unique) {
-      const members = [];
-      clusters.forEach((cl, i) => { if (cl === c) members.push(i); });
-      const size = members.length;
-      if (!size) continue;
-      let intra = 0, extra = 0;
-      for (const i of members) {
-        for (let j = 0; j < n; j++) {
-          if (i === j) continue;
-          if (clusters[j] === c) { if (members.includes(j)) intra += matrix[i][j]; }
-          else if (matrix[i][j] > 0) extra += matrix[i][j];
-        }
+    for (let i = 0; i < n; i++) {
+      const ci = clusters[i];
+      for (let j = 0; j < n; j++) {
+        const w = matrix[i][j];
+        if (i === j || w <= 0) continue;
+        total += w * Math.pow(clusters[j] === ci ? counts[ci] : n, powCc);
       }
-      if (intra > 0) total += Math.pow(intra, 2) / Math.pow(size, powCc);
-      total += extra * Math.pow(n, powBid);
     }
     return total;
   }
@@ -300,7 +295,7 @@
   // ── Change propagation (attenuated strongest-path) ──────────────────────
   // Earlier versions used probabilistic-OR over all paths; on a connected
   // matrix of ordinary density that saturates to ~100% everywhere within a
-  // few hops — mathematically true, informationally useless (an all-red
+  // few hops - mathematically true, informationally useless (an all-red
   // heatmap). This model instead scores each pair by the STRONGEST single
   // propagation path, attenuated per interface hop (Clarkson's CPM data
   // showed strong attenuation across interfaces):
@@ -335,7 +330,7 @@
   }
 
   // ── Print-ready report ──────────────────────────────────────────────────
-  // sections: [{h, html}] — returned as a standalone HTML string. The app
+  // sections: [{h, html}] - returned as a standalone HTML string. The app
   // saves it server-side (Downloads folder) because window.open is blocked
   // in the desktop shell; the user opens the file and prints to PDF.
   function reportHTML(title, meta, sections) {

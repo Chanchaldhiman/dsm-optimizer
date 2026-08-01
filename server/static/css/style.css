@@ -11,7 +11,7 @@
   --rule:         #D8DCE0;
   --rule-strong:  #B7BEC6;
 
-  /* Blueprint accent — the technical / drafting-instrument identity */
+  /* Blueprint accent - the technical / drafting-instrument identity */
   --blue:         #1F5FA8;
   --blue-deep:    #123A6B;
   --blue-tint:    #E8F0FA;
@@ -23,7 +23,7 @@
   --red-tint:     #FBEAE7;
   --green:        #2E7D5B;
 
-  /* Cluster palette — mirrors the Excel writer's fill colors 1:1 so the
+  /* Cluster palette - mirrors the Excel writer's fill colors 1:1 so the
      web view and the exported workbook always agree visually */
   --c0: #AED6F1; --c1: #A9DFBF; --c2: #F9E79F; --c3: #F5CBA7; --c4: #D7BDE2;
   --c5: #FAD7A0; --c6: #A3E4D7; --c7: #85C1E9; --c8: #D5DBDB; --c9: #FADBD8;
@@ -48,7 +48,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Faint blueprint grid on the page background — the one deliberate
+/* Faint blueprint grid on the page background - the one deliberate
    "signature" texture, kept quiet everywhere it isn't the focal point */
 body {
   background-image:
@@ -72,7 +72,7 @@ button { font-family: inherit; }
   /* height (not min-height) + hidden overflow: the app frame is locked to the
      viewport, so ONLY .main and .sidebar-scroll scroll internally. With
      min-height, tall results grew the page, the whole page scrolled, and the
-     sidebar became page-height — which is why the Run button footer kept
+     sidebar became page-height - which is why the Run button footer kept
      ending up below the fold no matter how it was positioned inside. */
   height: 100vh;
   overflow: hidden;
@@ -169,7 +169,7 @@ button { font-family: inherit; }
 }
 
 .upload-zone {
-  display: flex;                 /* labels are inline by default — that was the
+  display: flex;                 /* labels are inline by default - that was the
                                     'two rows / border around icon only' bug */
   flex-direction: column;
   align-items: center;
@@ -309,7 +309,7 @@ details.advanced .field { margin-top: 12px; }
 .empty-state h2 { font-size: 16px; color: var(--ink-soft); margin: 0 0 6px; }
 .empty-state p { font-size: 13px; max-width: 320px; margin: 0; }
 
-/* Stat readout strip — instrument-panel styling: label above, big mono value */
+/* Stat readout strip - instrument-panel styling: label above, big mono value */
 .stat-strip {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -751,7 +751,7 @@ table.tear-table th { font-family: var(--font-mono); font-size: 10px; text-trans
 
 /* ── v3.1: sticky run button, toast, guidance, k-range badge ───────────── */
 /* The sidebar is a column: a scrolling body + a run footer that is a flex
-   sibling, not sticky-positioned — so it is ALWAYS visible regardless of
+   sibling, not sticky-positioned - so it is ALWAYS visible regardless of
    content height or engine sticky quirks (the earlier sticky attempt used
    bottom:-20px, which pinned it 20px below the visible edge). */
 .run-section {

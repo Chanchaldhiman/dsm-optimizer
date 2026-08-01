@@ -62,7 +62,7 @@ def _eigengap_k(eigenvalues, min_k, max_k):
 def fiedler_vector(matrix):
     """
     Second-smallest eigenvector of the normalized Laplacian of a (sub)matrix.
-    Meaningful only for a CONNECTED graph — on a disconnected one the second
+    Meaningful only for a CONNECTED graph - on a disconnected one the second
     eigenvalue is still 0 and the "Fiedler" vector degenerates into a
     component indicator (callers should split into components first).
     """

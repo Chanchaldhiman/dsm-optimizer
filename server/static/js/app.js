@@ -21,10 +21,10 @@
     spectral: "Spectral", mcl: "MCL", thebeau: "Thebeau", louvain: "Louvain",
   };
   const ALGO_DESC = {
-    spectral: "Eigenvector partitioning — good at global structure",
-    mcl: "Markov flow simulation — deterministic, finds natural granularity",
+    spectral: "Eigenvector partitioning - good at global structure",
+    mcl: "Markov flow simulation - deterministic, finds natural granularity",
     thebeau: "Stochastic bidding (the classic DSM literature algorithm)",
-    louvain: "Modularity maximization — fast, widely used in network science",
+    louvain: "Modularity maximization - fast, widely used in network science",
   };
   const SOURCE_LABELS = {
     spectral: "Spectral (raw)", mcl: "MCL (raw)", thebeau: "Thebeau (raw)",
@@ -85,7 +85,7 @@
 
   // ── Workspace change hook ────────────────────────────────────────────────
   W.onChange = (dirty) => {
-    if (!dirty) {               // fresh load — reset all downstream state
+    if (!dirty) {               // fresh load - reset all downstream state
       analysis = null; analysisType = null; stage2 = null; chosenAlgo = null;
       stabilityCache = {}; whatif = null; diffData = null; propMatrix = null;
       finalizedSource = null; stale = false;
@@ -120,7 +120,7 @@
     constraintSection.style.display = t === "process" ? "none" : "block";
     runBtn.textContent = t === "process" ? "Run partitioning" : "Run clustering";
     runHint.textContent = t === "process"
-      ? "One step — sequencing, loop detection, and tearing analysis run together."
+      ? "One step - sequencing, loop detection, and tearing analysis run together."
       : "You'll compare four algorithms and pick one to sequence.";
   }
   dsmTypeSel.addEventListener("change", syncTypeUI);
@@ -221,7 +221,7 @@
       const proj = T.Project.parse(await projectFileInput.files[0].text());
       await applyProject(proj);
       toast("Project loaded" + (proj.client_state && proj.client_state.analysis
-        ? " — session restored where you left off" : ""));
+        ? " - session restored where you left off" : ""));
     } catch (e) {
       showError(e.message || String(e));
     } finally {
@@ -252,7 +252,7 @@
       } : null,
       server_state: serverState,
     });
-    toast("Project saved — full session included");
+    toast("Project saved - full session included");
   });
 
   async function applyProject(proj) {
@@ -421,7 +421,7 @@
     ALGOS.forEach((key) => compareGrid.appendChild(candidateCard(key)));
     compareNote.innerHTML = stage2
       ? `Sequenced with <b>${ALGO_NAMES[chosenAlgo]}</b>. Pick another candidate to re-sequence, or refine cluster membership by hand in the <b>What-if</b> tab. Check <b>Stability</b> to see how robust these assignments are across random seeds.`
-      : `Candidates are <b>raw algorithm output</b> — your k range and cluster-size limits are applied in the sequencing step (small clusters merged, oversized ones split). Inspect each candidate in its tab, then pick one to sequence. Sequencing reorders elements <i>within</i> clusters (simulated annealing) to minimize feedback marks. <b>Recommended</b> = lowest Thebeau cost, but cost doesn't capture everything — check <b>Stability</b> before trusting a close call.`;
+      : `Candidates are <b>raw algorithm output</b> - your k range and cluster-size limits are applied in the sequencing step (small clusters merged, oversized ones split). Inspect each candidate in its tab, then pick one to sequence. Sequencing reorders elements <i>within</i> clusters (simulated annealing) to minimize feedback marks. <b>Recommended</b> = lowest Thebeau cost, but cost doesn't capture everything - check <b>Stability</b> before trusting a close call.`;
   }
 
   function candidateCard(key) {
@@ -441,7 +441,7 @@
     let badge = isChosen ? '<span class="winner-badge">Sequenced</span>'
       : (isRec ? '<span class="rec-badge">Recommended</span>' : "");
     if (cand.k_in_range === false) {
-      badge += ' <span class="range-badge" title="This algorithm\'s natural granularity fell outside your k range. Your k range and cluster-size limits are enforced when you sequence — small clusters get merged, oversized ones split.">outside k range</span>';
+      badge += ' <span class="range-badge" title="This algorithm\'s natural granularity fell outside your k range. Your k range and cluster-size limits are enforced when you sequence - small clusters get merged, oversized ones split.">outside k range</span>';
     }
     card.innerHTML = `
       <div class="compare-card-head">
@@ -449,7 +449,7 @@
       </div>
       <div class="compare-stats">
         <div><div class="compare-stat-label" title="Number of clusters found">Clusters</div><div class="compare-stat-value">${cand.n_clusters}</div></div>
-        <div><div class="compare-stat-label" title="Thebeau coordination cost — lower is better">Cost</div><div class="compare-stat-value">${cand.cost.toFixed(1)}</div></div>
+        <div><div class="compare-stat-label" title="Thebeau coordination cost - lower is better">Cost</div><div class="compare-stat-value">${cand.cost.toFixed(1)}</div></div>
         <div><div class="compare-stat-label" title="Share of marks crossing cluster boundaries">Ext</div><div class="compare-stat-value">${(cand.external_ratio * 100).toFixed(1)}%</div></div>
       </div>
       <button class="btn btn-choose" ${sequencing ? "disabled" : ""}>${
@@ -500,7 +500,7 @@
       ["Elements", analysis.n_elements, "Total elements in the matrix"],
       ["Clusters", m.n_clusters, "Core clusters (bus elements excluded)"],
       ["External coupling", (m.external_ratio * 100).toFixed(1) + "%",
-        "Share of marks crossing cluster boundaries — lower is more modular"],
+        "Share of marks crossing cluster boundaries - lower is more modular"],
       ["Thebeau cost", m.cost.toFixed(1),
         "Coordination cost: penalizes large clusters and cross-cluster marks"],
       ["Bus elements", analysis.bus_elements.length,
@@ -534,7 +534,7 @@
     downloadBtn.disabled = false; reportBtn.disabled = false;
     finalizedSource = "process"; updateFinalizeStatus();
 
-    // Guidance: catch the two situations where partitioning output confuses —
+    // Guidance: catch the two situations where partitioning output confuses -
     // symmetric (undirected) matrices and one giant all-encompassing loop.
     const gm = analysis.metrics;
     const symmetric = gm.symmetry_ratio >= 0.6;
@@ -544,13 +544,13 @@
       guidanceBanner.innerHTML = `<span class="warn-triangle"></span><span>
         <b>${(gm.symmetry_ratio * 100).toFixed(0)}% of dependencies here run in both directions</b>,
         which reads as an undirected <b>component/architecture</b> matrix, not a directed task flow.
-        On a symmetric matrix every ordering has identical feedback (${gm.feedback_before} → ${gm.feedback_after} here — that's mathematics, not a failed run),
+        On a symmetric matrix every ordering has identical feedback (${gm.feedback_before} → ${gm.feedback_after} here - that's mathematics, not a failed run),
         so partitioning can't produce the block-triangular form you may be expecting.
-        Switch <b>DSM type</b> to <i>Component</i> in the sidebar and re-run — clustering is the right analysis for this data.</span>`;
+        Switch <b>DSM type</b> to <i>Component</i> in the sidebar and re-run - clustering is the right analysis for this data.</span>`;
     } else if (giantLoop) {
       guidanceBanner.style.display = "flex";
       guidanceBanner.innerHTML = `<span class="warn-triangle"></span><span>
-        <b>One iteration loop spans ${gm.largest_loop} of ${gm.n_elements} tasks</b> — the process is
+        <b>One iteration loop spans ${gm.largest_loop} of ${gm.n_elements} tasks</b> - the process is
         almost fully coupled, so reordering alone can't decompose it. The actionable output is the
         <b>tearing table</b> below: tear the top suggestions (treat those inputs as assumptions),
         remove those marks in the matrix editor, and re-run to watch the loop break apart.
@@ -564,9 +564,9 @@
     statStrip.innerHTML = "";
     const stats = [
       ["Elements", m.n_elements, "Total tasks"],
-      ["Loops", m.n_loops, "Iteration loops (strongly-connected components) — no reordering can remove these"],
+      ["Loops", m.n_loops, "Iteration loops (strongly-connected components) - no reordering can remove these"],
       ["Coupled tasks", m.coupled_elements, "Tasks trapped inside iteration loops"],
-      ["Parallel levels", m.n_levels, "Independent stages — tasks on the same level can run concurrently"],
+      ["Parallel levels", m.n_levels, "Independent stages - tasks on the same level can run concurrently"],
       ["Feedback marks", `${m.feedback_before} \u2192 ${m.feedback_after}`,
         "Dependencies pointing at later tasks, before vs after resequencing"],
     ];
@@ -581,7 +581,7 @@
 
     loopsContent.innerHTML = "";
     if (!analysis.loops.length) {
-      loopsContent.innerHTML = `<div class="compare-empty">No iteration loops — this process is fully sequential/parallel. The reordered matrix below has every dependency pointing backward.</div>`;
+      loopsContent.innerHTML = `<div class="compare-empty">No iteration loops - this process is fully sequential/parallel. The reordered matrix below has every dependency pointing backward.</div>`;
     }
     analysis.loops.forEach((lp, i) => {
       const card = document.createElement("div");
@@ -595,7 +595,7 @@
                 : `largest remaining loop: ${t.largest_loop_after}`}</td>
         </tr>`).join("");
       card.innerHTML = `
-        <div class="loop-title">Loop ${i + 1} — ${lp.size} coupled tasks (${lp.internal_feedback} residual feedback mark${lp.internal_feedback === 1 ? "" : "s"} after SA ordering)</div>
+        <div class="loop-title">Loop ${i + 1} - ${lp.size} coupled tasks (${lp.internal_feedback} residual feedback mark${lp.internal_feedback === 1 ? "" : "s"} after SA ordering)</div>
         <div class="loop-members">${lp.member_labels.map(esc).join(" \u21c4 ")}</div>
         <table class="tear-table">
           <tr><th>Tear this dependency</th><th>Weight</th><th>Impact</th><th>Result</th></tr>
@@ -646,8 +646,8 @@
           <option value="new">new cluster</option></select>
         <button class="mini-btn" id="wiApply">Apply</button>
       </span>
-      <span class="whatif-metric ${cmp(cost, baseCost)}" title="Thebeau cost — algorithm result: ${baseCost.toFixed(1)}">Cost <b>${cost.toFixed(1)}</b> <small>(algo: ${baseCost.toFixed(1)})</small></span>
-      <span class="whatif-metric ${cmp(ext, baseExt)}" title="External coupling — algorithm result: ${(baseExt * 100).toFixed(1)}%">External <b>${(ext * 100).toFixed(1)}%</b> <small>(algo: ${(baseExt * 100).toFixed(1)}%)</small></span>
+      <span class="whatif-metric ${cmp(cost, baseCost)}" title="Thebeau cost - algorithm result: ${baseCost.toFixed(1)}">Cost <b>${cost.toFixed(1)}</b> <small>(algo: ${baseCost.toFixed(1)})</small></span>
+      <span class="whatif-metric ${cmp(ext, baseExt)}" title="External coupling - algorithm result: ${(baseExt * 100).toFixed(1)}%">External <b>${(ext * 100).toFixed(1)}%</b> <small>(algo: ${(baseExt * 100).toFixed(1)}%)</small></span>
       <button class="mini-btn" id="wiReset">Reset to algorithm result</button>
       <button class="mini-btn" id="wiFinalize">Use for download</button>`;
 
@@ -743,8 +743,8 @@
       (i, j, v) => `${data.labels[i]} + ${data.labels[j]}: same cluster in ${(v * 100).toFixed(0)}% of runs`);
     const weak = data.labels.filter((_, i) => data.consistency[i] < 0.7);
     busNote.textContent = weak.length
-      ? `Unsettled elements (consistency < 70% — decide these manually): ${weak.join(", ")}`
-      : "All module assignments are stable across seeds — safe to trust this partition.";
+      ? `Unsettled elements (consistency < 70% - decide these manually): ${weak.join(", ")}`
+      : "All module assignments are stable across seeds - safe to trust this partition.";
   }
 
   // ── Diff & propagation ───────────────────────────────────────────────────
@@ -805,21 +805,21 @@
 
     if (tab === "whatif") {
       if (!whatif) { emptyPanel("What-if", "Sequence a clustering first."); return; }
-      panelTitle.textContent = "What-if — refine cluster membership by hand";
+      panelTitle.textContent = "What-if - refine cluster membership by hand";
       renderWhatifBar();
       const view = whatifView();
       showMatrix(view.matrix, view.labels, view.clusters, analysis.bus_labels);
-      busNote.textContent = "Move elements between clusters and watch cost/external update. Engineers often know constraints the matrix doesn't — trust yourself on close calls.";
+      busNote.textContent = "Move elements between clusters and watch cost/external update. Engineers often know constraints the matrix doesn't - trust yourself on close calls.";
       return;
     }
     if (tab === "stability") {
       if (!analysis || analysisType !== "component") { emptyPanel("Stability", "Run clustering first."); return; }
-      panelTitle.textContent = "Stability — is this partition robust, or a coin flip?";
+      panelTitle.textContent = "Stability - is this partition robust, or a coin flip?";
       renderStabilityBar();
       return;
     }
     if (tab === "diff") {
-      panelTitle.textContent = `Diff — ${W.sourceName || "current"} vs ${diffName || "?"}`;
+      panelTitle.textContent = `Diff - ${W.sourceName || "current"} vs ${diffName || "?"}`;
       renderDiff();
       return;
     }
@@ -847,7 +847,7 @@
       showChart();
       panelNote.textContent = `${analysis.pareto.length} points`;
       drawParetoChart(analysis.pareto);
-      busNote.textContent = "Diagnostic: spectral at every k (core elements). Look for the knee — where adding clusters stops reducing external coupling.";
+      busNote.textContent = "Diagnostic: spectral at every k (core elements). Look for the knee - where adding clusters stops reducing external coupling.";
     } else if (meta.type === "fiedler") {
       showChart();
       const comps = analysis.core_components_labels;
@@ -856,9 +856,9 @@
       if (comps) {
         const islands = comps.slice(1).map((c) =>
           c.length <= 4 ? c.join(", ") : `${c.length} elements`).join("  |  ");
-        busNote.innerHTML = `<b>The core matrix is disconnected — it splits into ${comps.length} independent groups`
+        busNote.innerHTML = `<b>The core matrix is disconnected - it splits into ${comps.length} independent groups`
           + ` with no dependencies between them.</b> That alone is its most natural decomposition`
-          + ` (separate islands: ${islands} — often accessories that only connected to the rest via the removed bus elements).`
+          + ` (separate islands: ${islands} - often accessories that only connected to the rest via the removed bus elements).`
           + ` The Fiedler profile below is computed <i>within the largest group</i>, where it is meaningful:`
           + ` the blue/red sign split is that group's natural 2-way division, near-zero elements are weakly attached.`;
       } else {
@@ -899,14 +899,14 @@
       }
       return {
         title: "Final (sequenced)", type: "matrix", source: "final",
-        emptyMsg: "No sequenced result yet — choose an algorithm above.",
+        emptyMsg: "No sequenced result yet - choose an algorithm above.",
         src: () => stage2
           ? { matrix: stage2.final.matrix, labels: stage2.final.labels, clusters: stage2.final.clusters, busLabels: analysis.bus_labels }
           : null,
       };
     }
-    if (tab === "pareto") return { title: "Pareto sweep — k vs. coupling / cost", type: "pareto" };
-    if (tab === "fiedler") return { title: "Fiedler vector — natural decomposition", type: "fiedler" };
+    if (tab === "pareto") return { title: "Pareto sweep - k vs. coupling / cost", type: "pareto" };
+    if (tab === "fiedler") return { title: "Fiedler vector - natural decomposition", type: "fiedler" };
     return null;
   }
 
@@ -999,9 +999,9 @@
       .slice(0, 6).filter((p) => p[0] > 0.01)
       .map((p) => `${esc(W.labels[p[1]])} <small>(${(p[0] * 100).toFixed(0)}%)</small>`);
     busNote.innerHTML =
-      `<b>Change drivers</b> — modifying these ripples widest through the system (freeze their interfaces early): ${rank(driver).join(" \u00b7 ") || "none"}<br>`
-      + `<b>Most change-prone</b> — these absorb changes made elsewhere (design them tolerant, verify them late): ${rank(prone).join(" \u00b7 ") || "none"}<br>`
-      + `<span style="color:var(--ink-faint)">Model: strongest propagation path, attenuated 40% per interface hop (Clarkson-style), up to 4 hops — full red = direct dependency, lighter bands = 2nd/3rd/4th-hand exposure. Column j = "if j changes, who's at risk"; percentages are mean reach strength.</span>`;
+      `<b>Change drivers</b> - modifying these ripples widest through the system (freeze their interfaces early): ${rank(driver).join(" \u00b7 ") || "none"}<br>`
+      + `<b>Most change-prone</b> - these absorb changes made elsewhere (design them tolerant, verify them late): ${rank(prone).join(" \u00b7 ") || "none"}<br>`
+      + `<span style="color:var(--ink-faint)">Model: strongest propagation path, attenuated 40% per interface hop (Clarkson-style), up to 4 hops - full red = direct dependency, lighter bands = 2nd/3rd/4th-hand exposure. Column j = "if j changes, who's at risk"; percentages are mean reach strength.</span>`;
   }
 
   // ── Finalize / download / report ─────────────────────────────────────────
@@ -1123,13 +1123,13 @@
         (diffData.newEls.length ? ` New elements: ${diffData.newEls.map(esc).join(", ")}.` : "") +
         (diffData.goneEls.length ? ` Removed elements: ${diffData.goneEls.map(esc).join(", ")}.` : "") + `</p>` });
     }
-    const html = T.reportHTML(`DSM Report — ${W.sourceName}`, meta, sections);
+    const html = T.reportHTML(`DSM Report - ${W.sourceName}`, meta, sections);
     fetch("/api/save_report", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ html }),
     }).then((r) => r.json().then((out) => {
       if (!r.ok) throw new Error(out.error || "Could not save report.");
-      toast(`Report saved: ${out.path} — open it and print to PDF`);
+      toast(`Report saved: ${out.path} - open it and print to PDF`);
     })).catch((e) => showError(e.message || String(e)));
   }
 
@@ -1365,7 +1365,7 @@
   }
 
   function drawFiedlerChart(rawFiedler, rawLabels) {
-    // Sort by value: the sorted profile is how Fiedler vectors are read —
+    // Sort by value: the sorted profile is how Fiedler vectors are read -
     // the sign change is the natural split, near-zero entries are the
     // weakly-attached elements.
     const pairs = rawFiedler.map((v, i) => [v, rawLabels[i] || `#${i}`])

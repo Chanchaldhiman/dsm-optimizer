@@ -1,5 +1,5 @@
 """
-Louvain community detection — self-contained implementation (no networkx).
+Louvain community detection - self-contained implementation (no networkx).
 
 Operates on the symmetrised weighted graph W = (A + A^T)/2 and maximises
 Newman-Girvan modularity. Standard two-phase scheme: (1) greedy local
@@ -7,7 +7,7 @@ moves of nodes between neighbouring communities until no gain, (2)
 aggregate communities into super-nodes and repeat on the smaller graph.
 
 Node visit order is shuffled with a local seeded RNG, which is the only
-source of randomness — seed it for reproducible output.
+source of randomness - seed it for reproducible output.
 """
 import random
 import numpy as np

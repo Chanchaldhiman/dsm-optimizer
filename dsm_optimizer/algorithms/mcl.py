@@ -3,7 +3,7 @@ import numpy as np
 
 def run_mcl(matrix, expansion=2, inflation=2.0, iterations=100, tol=1e-6):
     """
-    Markov Clustering Algorithm (MCL) — self-contained implementation.
+    Markov Clustering Algorithm (MCL) - self-contained implementation.
     Works directly on DSM adjacency matrix.
     """
     M = matrix.astype(float).copy()
