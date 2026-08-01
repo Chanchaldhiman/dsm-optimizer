@@ -1,7 +1,6 @@
 ![DSM Optimizer: load a matrix, compare four algorithms, sequence, explore change propagation](docs/demo.gif)
-**DSM Optimizer: load a matrix, compare four algorithms, sequence, explore change propagation**
 
-# DSM Optimizer
+# Design Structure Matrix (DSM) Optimizer
 
 **See the hidden structure of your system - then fix it.**
 
