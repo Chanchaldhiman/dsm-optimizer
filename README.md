@@ -1,4 +1,5 @@
 ![DSM Optimizer: load a matrix, compare four algorithms, sequence, explore change propagation](docs/demo.gif)
+**DSM Optimizer: load a matrix, compare four algorithms, sequence, explore change propagation**
 
 # DSM Optimizer
 
