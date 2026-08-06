@@ -12,7 +12,7 @@ No cloud. No account. No data leaves your machine.
 
 ## The problem this solves
 
-Every complex product - a machine, a spacecraft, a software platform, a development process - is really a web of dependencies. That web is invisible, so teams discover it the expensive way:
+Every complex product - a machine, a car, a spacecraft, a software platform, a development process - is really a web of dependencies. That web is invisible, so teams discover it the expensive way:
 
 - A "simple" change to one component ripples into five others, three sprints late.
 - Two teams iterate against each other for months because their tasks form a loop nobody mapped.
@@ -114,7 +114,7 @@ r = partition_dsm(matrix, labels, seed=42)        # loops, levels, tears
 s = stability_analysis(matrix, "louvain", result["clusters"][:len(matrix)], runs=20)
 ```
 
-`pytest tests/ -v` runs the suite. Releases publish to PyPI automatically on version tags via `.github/workflows/publish.yml` (PyPI Trusted Publishing - setup steps in the file). Windows installer with `.dsmproj` file association: `installer.iss` (Inno Setup). Full change history: [CHANGELOG.md](CHANGELOG.md).
+`pytest tests/ -v` runs the suite. Releases publish to PyPI automatically on version tags via `.github/workflows/publish.yml` (PyPI Trusted Publishing - setup steps in the file). Windows installer with `.dsmproj` file association: `installer.iss` (Inno Setup).
 
 ## Roadmap
 
